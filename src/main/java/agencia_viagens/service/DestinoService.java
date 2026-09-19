@@ -1,58 +1,56 @@
 package agencia_viagens.service;
 
 import agencia_viagens.entity.Destino;
+import agencia_viagens.repository.DestinoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class DestinoService {
     
-    // Armazenamento em memória
-    private List<Destino> destinos = new ArrayList<>();
-    private Long proximoId = 1L;
+    @Autowired
+    private DestinoRepository destinoRepository;
 
     public Destino salvar(Destino destino) {
-        destino.setId(proximoId++);
-        destinos.add(destino);
-        return destino;
+        return destinoRepository.save(destino);
     }
 
     public List<Destino> listarTodos() {
-        return destinos;
+        return destinoRepository.findAll();
     }
 
     public List<Destino> pesquisar(String termo) {
-        return destinos.stream()
-                .filter(d -> d.getNome().toLowerCase().contains(termo.toLowerCase()) || 
-                             d.getLocalizacao().toLowerCase().contains(termo.toLowerCase()))
-                .collect(Collectors.toList());
+        return destinoRepository.findByNomeContainingIgnoreCaseOrLocalizacaoContainingIgnoreCase(termo, termo);
     }
 
     public Optional<Destino> buscarPorId(Long id) {
-        return destinos.stream().filter(d -> d.getId().equals(id)).findFirst();
+        return destinoRepository.findById(id);
     }
 
     public Optional<Destino> atualizar(Long id, Destino destinoAtualizado) {
-        return buscarPorId(id).map(destinoExistente -> {
+        return destinoRepository.findById(id).map(destinoExistente -> {
             destinoExistente.setNome(destinoAtualizado.getNome());
             destinoExistente.setLocalizacao(destinoAtualizado.getLocalizacao());
             destinoExistente.setDescricao(destinoAtualizado.getDescricao());
-            return destinoExistente;
+            return destinoRepository.save(destinoExistente);
         });
     }
 
     public Optional<Destino> avaliar(Long id, double nota) {
-        return buscarPorId(id).map(destino -> {
+        return destinoRepository.findById(id).map(destino -> {
             destino.adicionarAvaliacao(nota);
-            return destino;
+            return destinoRepository.save(destino);
         });
     }
 
     public boolean excluir(Long id) {
-        return destinos.removeIf(d -> d.getId().equals(id));
+        if (destinoRepository.existsById(id)) {
+            destinoRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
