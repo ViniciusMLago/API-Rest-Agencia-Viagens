@@ -1,6 +1,6 @@
-package com.example.demo.service;
+package agencia_viagens.service;
 
-import com.example.demo.model.Destino;
+import agencia_viagens.entity.Destino;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

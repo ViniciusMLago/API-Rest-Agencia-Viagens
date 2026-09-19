@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package agencia_viagens.entity;
 
 public class Destino {
     private Long id;
