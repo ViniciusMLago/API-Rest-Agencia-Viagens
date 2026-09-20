@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository 
 public interface DestinoRepository extends JpaRepository<Destino, Long> {
 
     // Método de busca por nome ou localização, ignorando maiúsculas e minúsculas
